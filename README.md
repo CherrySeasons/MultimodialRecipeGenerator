@@ -144,3 +144,19 @@ streamlit run app/streamlit_app.py
 - API Integration
 - Computer Vision
 - Large Language Models
+
+---
+
+# Author
+
+**Teja Sai Eswar**  
+B.Tech, EECE Department 
+IIT Kharagpur
+
+📧 Email: tsereddy2022@gmail.com  
+🔗 GitHub: https://github.com/CherrySeasons  
+
+---
+
+If you found this project interesting, feel free to ⭐ the repository or connect with me!
+
