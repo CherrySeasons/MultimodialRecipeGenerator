@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+*.pt
+*.bin
+*.safetensors
+models/
+.ipynb_checkpoints/
+.DS_Store
+*.log
+
+# Notebooks contain API keys — keep off GitHub
+notebooks/
