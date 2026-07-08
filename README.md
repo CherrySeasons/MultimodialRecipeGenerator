@@ -1,123 +1,146 @@
+
 # 🍽️ Multimodal Recipe Generator
 
-> Upload a food photo → Get a complete recipe + nutrition analysis instantly
+A multimodal AI application that generates complete recipes from a food image with optional dietary text instructions.
+
+The system combines **computer vision**, **large language models**, and **recipe retrieval** to generate accurate, customizable recipes along with nutritional information.
 
 ---
 
-## 📌 Overview
+## Features
 
-A full-stack multimodal AI application that:
-1. **Identifies food** from an uploaded image using a fine-tuned BLIP model
-2. **Generates recipes** — standard via Spoonacular API, or custom via Mistral 7B / Qwen 2.5-72B
-3. **Provides nutrition** with precise per-serving macronutrient data
-
----
-
-## 🏗️ Architecture
-
-[Food Image] ──► BLIP (fine-tuned) ──► Food Label
-│
-┌────────────────────┤
-│                    │
-No instructions        Has instructions
-│                    │
-▼                    ▼
-Spoonacular API       Mistral 7B / Qwen 72B
-(recipe+nutrition)    (custom recipe)
-│
-▼
-Spoonacular Nutrition API
-│                   │
-└───────────────────┘
-│
-▼
-FastAPI Backend
-│
-▼
-Streamlit Frontend
+- 📷 Recognizes food from uploaded images using a fine-tuned BLIP model
+- 🧠 Supports optional dietary text instructions for recipe customization
+- 📚 Retrieves existing recipes from Spoonacular whenever available
+- 🤖 Generates new recipes using Mistral AI when recipes are unavailable or customized
+- 🥗 Enriches recipes with nutrition, cook time, servings, ingredients and preparation steps
+- 🌐 Interactive Streamlit interface with FastAPI backend
 
 ---
 
-## 🛠️ Tech Stack
+# Pipeline
+
+```
+                Food Image
+                     │
+                     ▼
+          Fine-tuned BLIP (Food101)
+                     │
+               Predicted Food
+                     │
+         ┌───────────┴────────────┐
+         │                        │
+ No dietary instructions   Dietary instructions
+         │                        │
+         ▼                        ▼
+ Spoonacular API             Mistral AI
+ (Recipe Retrieval)     (Recipe Generation)
+         │                        │
+         └───────────┬────────────┘
+                     ▼
+     Spoonacular Nutrition API
+                     │
+                     ▼
+             FastAPI Backend
+                     │
+                     ▼
+           Streamlit Frontend
+```
+
+---
+
+# Model Training
+
+The food recognition model was specialized for food classification using parameter-efficient fine-tuning.
+
+- Base model: **BLIP**
+- Dataset: **Food101**
+- Fine-tuning: **LoRA (PEFT)**
+- Training Platform: **Google Colab (T4 GPU)**
+
+Performance
+
+| Model | Accuracy |
+|--------|---------:|
+| CLIP (Zero-shot) | 67% |
+| Fine-tuned BLIP | ~85% |
+
+The fine-tuned BLIP model significantly improves recognition accuracy over the zero-shot CLIP baseline.
+
+---
+
+# Technology Stack
 
 | Component | Technology |
-|---|---|
-| Food Recognition | BLIP fine-tuned with LoRA on Food101 |
-| LLM | Mistral 7B / Qwen 2.5-72B via HuggingFace |
-| Recipe + Nutrition | Spoonacular API |
-| Backend | FastAPI + Uvicorn |
+|------------|------------|
+| Vision Model | BLIP |
+| Baseline | CLIP |
+| Fine-tuning | LoRA (PEFT) |
+| Dataset | Food101 |
+| Recipe Retrieval | Spoonacular API |
+| Recipe Generation | Mistral AI |
+| Nutrition | Spoonacular API |
+| Backend | FastAPI |
 | Frontend | Streamlit |
-| Fine-tuning | PEFT (LoRA) — only 0.635% of parameters trained |
-| Containerization | Docker |
-| Training | Google Colab T4 GPU |
+| Deployment | Docker |
+| Training | Google Colab |
 
 ---
 
-## 📊 Model Performance
+# Project Structure
 
-| Model | Method | Top-1 Accuracy |
-|---|---|---|
-| CLIP ViT-B/32 | Zero-shot baseline | 67.0% |
-| BLIP base | Fine-tuned with LoRA | ~80%+ |
-
-**+13% improvement** through LoRA fine-tuning on Food101
-
----
-
-## 🚀 Getting Started
-
-```bash
-git clone https://github.com/YOUR_USERNAME/multimodal-recipe-generator.git
-cd multimodal-recipe-generator
-pip install -r requirements.txt
-cp .env.example .env
-# Fill in your API keys in .env
 ```
-
-### Run locally
-```bash
-# Terminal 1
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-
-# Terminal 2
-streamlit run app/streamlit_app.py --server.port 8501
-```
-
-### Docker
-```bash
-docker build -t recipe-generator .
-docker run -p 8000:8000 -p 8501:8501 \
-  -e HF_TOKEN=your_token \
-  -e SPOONACULAR_KEY=your_key \
-  recipe-generator
-```
-
----
-
-## 📁 Project Structure
-
 multimodal-recipe-generator/
+│
 ├── app/
-│   ├── pipeline.py        # ML pipeline (BLIP + Spoonacular + Mistral)
-│   ├── main.py            # FastAPI server
-│   └── streamlit_app.py   # Streamlit UI
+│   ├── pipeline.py
+│   ├── main.py
+│   ├── streamlit_app.py
+│   └── utils.py
+│
+├── models/
+│
 ├── notebooks/
-│   ├── week1_clip_zeroshot.ipynb
-│   ├── week2_recipe_pipeline.ipynb
-│   └── week3_blip2_finetune.ipynb
-├── .env.example
-├── requirements.txt
+│
 ├── Dockerfile
+├── requirements.txt
 └── README.md
+```
 
 ---
 
-## 📝 Skills Demonstrated
+# Running the Project
 
-- Multimodal Learning (Vision + Language)
-- Transfer Learning + LoRA Fine-Tuning
-- LLM Prompt Engineering
-- REST API Design (FastAPI)
-- Interactive ML Frontend (Streamlit)
-- Docker Containerization
-- API Integration (HuggingFace, Spoonacular)
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the FastAPI server
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Run the Streamlit frontend
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+---
+
+# Skills Demonstrated
+
+- Multimodal AI
+- Vision-Language Models
+- Transfer Learning
+- Parameter-Efficient Fine-Tuning (LoRA)
+- Prompt Engineering
+- FastAPI
+- Streamlit
+- Docker
+- API Integration
+- Computer Vision
+- Large Language Models
